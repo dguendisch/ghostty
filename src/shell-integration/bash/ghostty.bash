@@ -244,6 +244,15 @@ function __ghostty_precmd() {
     builtin printf "\e]7;kitty-shell-cwd://%s%s\a" "$HOSTNAME" "$PWD"
   fi
 
+  # Status bar: run the configured script and send output to Ghostty
+  if [[ -n "$GHOSTTY_STATUS_BAR_SCRIPT" && -x "$GHOSTTY_STATUS_BAR_SCRIPT" ]]; then
+    builtin local __ghostty_sb_output
+    __ghostty_sb_output=$("$GHOSTTY_STATUS_BAR_SCRIPT" 2>/dev/null)
+    if [[ -n "$__ghostty_sb_output" ]]; then
+      builtin printf '\e]777;statusbar;%s\a' "$__ghostty_sb_output"
+    fi
+  fi
+
   _ghostty_executing=0
 }
 

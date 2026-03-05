@@ -1400,6 +1400,52 @@ input: RepeatableReadableIO = .{},
 ///     a scrollbar.
 scrollbar: Scrollbar = .system,
 
+/// A path to a shell script that Ghostty will invoke to generate status bar
+/// content for each terminal surface. The status bar is rendered as a
+/// dedicated area below the terminal.
+///
+/// The script is invoked on shell integration events (command start, command
+/// finish, directory change) and periodically on a timer. Ghostty passes
+/// context to the script via environment variables:
+///
+///   * `GHOSTTY_PWD` - The current working directory.
+///   * `GHOSTTY_EXIT_CODE` - The exit code of the last command.
+///   * `GHOSTTY_COLS` - The terminal column count.
+///   * `GHOSTTY_ROWS` - The terminal row count.
+///
+/// The script must output a JSON array of segment objects to stdout. Each
+/// segment has the following fields:
+///
+///   * `text` (required) - The text to display.
+///   * `fg` - Foreground color as a hex string (e.g. `#a6e3a1`).
+///   * `bg` - Background color as a hex string.
+///   * `bold` - Boolean, whether to render bold.
+///   * `italic` - Boolean, whether to render italic.
+///   * `underline` - Boolean, whether to render underlined.
+///   * `align` - `left` (default) or `right`.
+///
+/// If the path is not absolute, it is considered relative to the directory of
+/// the configuration file, or from the current working directory if used as a
+/// CLI flag. The path may be prefixed with `~/` to reference the user's home
+/// directory.
+///
+/// This only applies to macOS currently.
+@"status-bar-script": ?Path = null,
+
+/// The font family to use for the status bar. If not specified, the system
+/// default UI font is used. Unlike the main terminal font, this does not
+/// need to be a fixed-width font.
+///
+/// This only applies to macOS currently.
+@"status-bar-font-family": ?[:0]const u8 = null,
+
+/// The background color for the status bar. If not specified, defaults to
+/// a semi-transparent black. Specified as either hex (`#RRGGBB` or
+/// `RRGGBB`) or a named X11 color.
+///
+/// This only applies to macOS currently.
+@"status-bar-background": ?Color = null,
+
 /// Match a regular expression against the terminal text and associate clicking
 /// it with an action. This can be used to match URLs, file paths, etc. Actions
 /// can be opening using the system opener (e.g. `open` or `xdg-open`) or

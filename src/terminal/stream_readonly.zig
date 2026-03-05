@@ -187,6 +187,7 @@ pub const Handler = struct {
             .show_desktop_notification,
             .progress_report,
             .clipboard_contents,
+            .status_bar_content,
             .title_push,
             .title_pop,
             => {},

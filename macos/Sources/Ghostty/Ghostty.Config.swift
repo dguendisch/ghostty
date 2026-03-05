@@ -143,6 +143,36 @@ extension Ghostty {
             return path.isEmpty ? nil : ConfigPath(path: path, optional: v.optional)
         }
 
+        var statusBarFontFamily: String? {
+            guard let config = self.config else { return nil }
+            var v: UnsafePointer<Int8>?
+            let key = "status-bar-font-family"
+            guard ghostty_config_get(config, &v, key, UInt(key.lengthOfBytes(using: .utf8))) else { return nil }
+            guard let ptr = v else { return nil }
+            return String(cString: ptr)
+        }
+
+        var statusBarBackground: Color? {
+            guard let config = self.config else { return nil }
+            var color: ghostty_config_color_s = .init()
+            let key = "status-bar-background"
+            guard ghostty_config_get(config, &color, key, UInt(key.lengthOfBytes(using: .utf8))) else { return nil }
+            return .init(
+                red: Double(color.r) / 255,
+                green: Double(color.g) / 255,
+                blue: Double(color.b) / 255
+            )
+        }
+
+        var statusBarScript: ConfigPath? {
+            guard let config = self.config else { return nil }
+            var v = ghostty_config_path_s()
+            let key = "status-bar-script"
+            guard ghostty_config_get(config, &v, key, UInt(key.lengthOfBytes(using: .utf8))) else { return nil }
+            let path = String(cString: v.path)
+            return path.isEmpty ? nil : ConfigPath(path: path, optional: v.optional)
+        }
+
         var bellAudioVolume: Float {
             guard let config = self.config else { return 0.5 }
             var v: Double = 0.5

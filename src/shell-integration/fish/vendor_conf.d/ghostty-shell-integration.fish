@@ -232,6 +232,17 @@ function __ghostty_setup --on-event fish_prompt -d "Setup ghostty integration"
         printf \e\]7\;file://%s%s\a $hostname (string escape --style=url $PWD)
     end
 
+    # Status bar: run the configured script at each prompt and send output
+    # to Ghostty via OSC 777;statusbar.
+    if test -n "$GHOSTTY_STATUS_BAR_SCRIPT"; and test -x "$GHOSTTY_STATUS_BAR_SCRIPT"
+        function __ghostty_statusbar --on-event fish_prompt --on-variable PWD -d 'Update Ghostty status bar'
+            set -l output (eval "$GHOSTTY_STATUS_BAR_SCRIPT" 2>/dev/null)
+            if test -n "$output"
+                printf '\e]777;statusbar;%s\a' "$output"
+            end
+        end
+    end
+
     # Enable fish to handle reflow because Ghostty clears the prompt on resize.
     set --global fish_handle_reflow 1
 

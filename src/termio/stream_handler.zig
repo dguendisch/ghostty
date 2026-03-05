@@ -321,6 +321,7 @@ pub const StreamHandler = struct {
             .start_hyperlink => try self.startHyperlink(value.uri, value.id),
             .clipboard_contents => try self.clipboardContents(value.kind, value.data),
             .semantic_prompt => try self.semanticPrompt(value),
+            .status_bar_content => self.statusBarContent(value.json),
             .mouse_shape => try self.setMouseShape(value),
             .configure_charset => self.configureCharset(value.slot, value.charset),
             .set_attribute => {
@@ -1421,6 +1422,14 @@ pub const StreamHandler = struct {
             // string and send it to the terminal.
             const msg = try termio.Message.writeReq(self.alloc, response.items);
             self.messageWriter(msg);
+        }
+    }
+
+    fn statusBarContent(self: *StreamHandler, json: []const u8) void {
+        if (apprt.surface.Message.WriteReq.init(self.alloc, json)) |req| {
+            self.surfaceMessageWriter(.{ .status_bar_output = req });
+        } else |err| {
+            log.warn("error creating status bar message err={}", .{err});
         }
     }
 

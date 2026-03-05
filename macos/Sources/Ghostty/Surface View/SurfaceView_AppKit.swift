@@ -62,6 +62,9 @@ extension Ghostty {
             }
         }
 
+        // The current status bar segments to display. Empty means no status bar.
+        @Published var statusBarSegments: [StatusBarSegment] = []
+
         // The currently active key sequence. The sequence is not active if this is empty.
         @Published var keySequence: [KeyboardShortcut] = []
 

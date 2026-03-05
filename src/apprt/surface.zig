@@ -108,6 +108,9 @@ pub const Message = union(enum) {
     /// Selected search index change
     search_selected: ?usize,
 
+    /// The status bar content received via OSC 777;statusbar (JSON string of segments).
+    status_bar_output: WriteReq,
+
     pub const ReportTitleStyle = enum {
         csi_21_t,
 
