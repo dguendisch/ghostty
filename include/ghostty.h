@@ -854,6 +854,12 @@ typedef struct {
   uint64_t len;
 } ghostty_action_scrollbar_s;
 
+// apprt.action.StatusBarUpdate.C
+typedef struct {
+  const char* json;
+  size_t json_len;
+} ghostty_action_status_bar_update_s;
+
 // apprt.Action.Key
 typedef enum {
   GHOSTTY_ACTION_QUIT,
@@ -921,6 +927,7 @@ typedef enum {
   GHOSTTY_ACTION_SEARCH_SELECTED,
   GHOSTTY_ACTION_READONLY,
   GHOSTTY_ACTION_COPY_TITLE_TO_CLIPBOARD,
+  GHOSTTY_ACTION_STATUS_BAR_UPDATE,
 } ghostty_action_tag_e;
 
 typedef union {
@@ -962,6 +969,7 @@ typedef union {
   ghostty_action_search_total_s search_total;
   ghostty_action_search_selected_s search_selected;
   ghostty_action_readonly_e readonly;
+  ghostty_action_status_bar_update_s status_bar_update;
 } ghostty_action_u;
 
 typedef struct {

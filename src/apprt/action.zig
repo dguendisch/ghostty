@@ -343,6 +343,10 @@ pub const Action = union(Key) {
     /// otherwise the terminal-set title.
     copy_title_to_clipboard,
 
+    /// Status bar content has been updated by the status bar script.
+    /// The JSON string contains an array of styled segments to render.
+    status_bar_update: StatusBarUpdate,
+
     /// Sync with: ghostty_action_tag_e
     pub const Key = enum(c_int) {
         quit,
@@ -410,6 +414,7 @@ pub const Action = union(Key) {
         search_selected,
         readonly,
         copy_title_to_clipboard,
+        status_bar_update,
 
         test "ghostty.h Action.Key" {
             try lib.checkGhosttyHEnum(Key, "GHOSTTY_ACTION_");
@@ -998,6 +1003,26 @@ pub const SearchSelected = struct {
     pub fn cval(self: SearchSelected) C {
         return .{
             .selected = if (self.selected) |s| @intCast(s) else -1,
+        };
+    }
+};
+
+/// Status bar content update containing a JSON string of styled segments.
+pub const StatusBarUpdate = struct {
+    /// JSON string containing an array of segment objects.
+    /// The pointer is only valid for the duration of the action callback.
+    json: [:0]const u8,
+
+    // Sync with: ghostty_action_status_bar_update_s
+    pub const C = extern struct {
+        json: [*:0]const u8,
+        json_len: usize,
+    };
+
+    pub fn cval(self: StatusBarUpdate) C {
+        return .{
+            .json = self.json.ptr,
+            .json_len = self.json.len,
         };
     }
 };

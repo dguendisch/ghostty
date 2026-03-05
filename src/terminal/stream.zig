@@ -126,6 +126,7 @@ pub const Action = union(Key) {
     kitty_color_report: kitty.color.OSC,
     color_operation: ColorOperation,
     semantic_prompt: SemanticPrompt,
+    status_bar_content: StatusBarContent,
 
     pub const Key = lib.Enum(
         lib_target,
@@ -223,6 +224,7 @@ pub const Action = union(Key) {
             "kitty_color_report",
             "color_operation",
             "semantic_prompt",
+            "status_bar_content",
         },
     );
 
@@ -319,6 +321,16 @@ pub const Action = union(Key) {
 
         pub fn cval(self: WindowTitle) WindowTitle.C {
             return .init(self.title);
+        }
+    };
+
+    pub const StatusBarContent = struct {
+        json: []const u8,
+
+        pub const C = lib.String;
+
+        pub fn cval(self: StatusBarContent) StatusBarContent.C {
+            return .init(self.json);
         }
     };
 
@@ -2028,6 +2040,10 @@ pub fn Stream(comptime Handler: type) type {
                         .title = v.title,
                         .body = v.body,
                     });
+                },
+
+                .status_bar_content => |json| {
+                    try self.handler.vt(.status_bar_content, .{ .json = json });
                 },
 
                 .hyperlink_start => |v| {

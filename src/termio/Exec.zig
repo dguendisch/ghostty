@@ -564,6 +564,7 @@ pub const Config = struct {
     shell_integration_features: configpkg.Config.ShellIntegrationFeatures = .{},
     cursor_blink: ?bool = null,
     working_directory: ?[]const u8 = null,
+    status_bar_script: ?[:0]const u8 = null,
     resources_dir: ?[]const u8,
     term: []const u8,
 
@@ -627,6 +628,11 @@ const Subprocess = struct {
         if (cfg.resources_dir) |dir| {
             log.info("found Ghostty resources dir: {s}", .{dir});
             try env.put("GHOSTTY_RESOURCES_DIR", dir);
+        }
+
+        // If we have a status bar script, pass it to the shell integration
+        if (cfg.status_bar_script) |script| {
+            try env.put("GHOSTTY_STATUS_BAR_SCRIPT", script);
         }
 
         // Set our TERM var. This is a bit complicated because we want to use

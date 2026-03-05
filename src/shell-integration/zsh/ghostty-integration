@@ -243,6 +243,23 @@ _ghostty_deferred_init() {
         _ghostty_report_pwd"
     _ghostty_report_pwd
 
+    # Status bar: run the configured script at each prompt and send output
+    # to Ghostty via OSC 777;statusbar. The script runs in the current shell
+    # session so it has access to all environment variables.
+    if [[ -n "$GHOSTTY_STATUS_BAR_SCRIPT" ]] && [[ -x "$GHOSTTY_STATUS_BAR_SCRIPT" ]]; then
+      _ghostty_statusbar() {
+        builtin local output
+        output=$("$GHOSTTY_STATUS_BAR_SCRIPT" 2>/dev/null)
+        if [[ -n "$output" ]]; then
+          builtin print -rnu $_ghostty_fd $'\e]777;statusbar;'"$output"$'\a'
+        fi
+      }
+      functions[_ghostty_precmd]+="
+          _ghostty_statusbar"
+      # Also run on directory change for immediate feedback
+      chpwd_functions=(${chpwd_functions[@]} "_ghostty_statusbar")
+    fi
+
     if [[ "$GHOSTTY_SHELL_FEATURES" == *"title"* ]]; then
       # Enable terminal title changes, formatted for user-friendly display.
       functions[_ghostty_precmd]+="

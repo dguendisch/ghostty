@@ -640,6 +640,10 @@ pub fn init(
             .shell_integration_features = config.@"shell-integration-features",
             .cursor_blink = config.@"cursor-style-blink",
             .working_directory = if (config.@"working-directory") |wd| wd.value() else null,
+            .status_bar_script = if (config.@"status-bar-script") |p| switch (p) {
+                .optional => |s| s,
+                .required => |s| s,
+            } else null,
             .resources_dir = global_state.resources_dir.host(),
             .term = config.term,
             .rt_pre_exec_info = .init(config),
@@ -1148,6 +1152,26 @@ pub fn handleMessage(self: *Surface, msg: Message) !void {
                 .search_selected,
                 .{ .selected = v },
             );
+        },
+
+        .status_bar_output => |req| {
+            defer req.deinit();
+
+            // Get the JSON string from the write request
+            const json = req.slice();
+
+            // Allocate a null-terminated copy for the C boundary
+            const json_z = self.alloc.dupeZ(u8, json) catch return;
+            defer self.alloc.free(json_z);
+
+            // Send to the app runtime
+            _ = self.rt_app.performAction(
+                .{ .surface = self },
+                .status_bar_update,
+                .{ .json = json_z },
+            ) catch |err| {
+                log.warn("failed to send status bar update: {}", .{err});
+            };
         },
     }
 }

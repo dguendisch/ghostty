@@ -156,6 +156,10 @@ pub const Command = union(Key) {
 
     kitty_clipboard_protocol: KittyClipboardProtocol,
 
+    /// Status bar content update (OSC 777;statusbar;<json>)
+    /// Sent by shell integration to update the status bar with JSON segments.
+    status_bar_content: [:0]const u8,
+
     /// OSC 3008. Hierarchical context signalling (UAPI spec).
     /// https://uapi-group.org/specifications/specs/osc_context/
     context_signal: parsers.context_signal.Command,
@@ -192,6 +196,7 @@ pub const Command = union(Key) {
             "conemu_comment",
             "kitty_text_sizing",
             "kitty_clipboard_protocol",
+            "status_bar_content",
             "context_signal",
         },
     );
@@ -424,6 +429,7 @@ pub const Parser = struct {
             .show_desktop_notification,
             .kitty_text_sizing,
             .kitty_clipboard_protocol,
+            .status_bar_content,
             .context_signal,
             => {},
         }

@@ -65,6 +65,7 @@ extension Ghostty {
         var body: some View {
             let center = NotificationCenter.default
 
+            VStack(spacing: 0) {
             ZStack {
                 // We use a GeometryReader to get the frame bounds so that our metal surface
                 // is up to date. See TerminalSurfaceView for why we don't use the NSView
@@ -242,6 +243,19 @@ extension Ghostty {
                 SurfaceGrabHandle(surfaceView: surfaceView)
                 #endif
             }
+
+            // Status bar below the terminal surface. Takes dedicated space,
+            // reducing the terminal row count automatically via the GeometryReader.
+            #if canImport(AppKit)
+            if !surfaceView.statusBarSegments.isEmpty {
+                StatusBarView(
+                    segments: surfaceView.statusBarSegments,
+                    fontFamily: ghostty.config.statusBarFontFamily,
+                    backgroundColor: ghostty.config.statusBarBackground ?? Color.black.opacity(0.85)
+                )
+            }
+            #endif
+            } // VStack
 
         }
     }
