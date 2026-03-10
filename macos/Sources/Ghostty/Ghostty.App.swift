@@ -670,6 +670,9 @@ extension Ghostty {
             case GHOSTTY_ACTION_STATUS_BAR_UPDATE:
                 statusBarUpdate(app, target: target, v: action.action.status_bar_update)
 
+            case GHOSTTY_ACTION_RESTART_SURFACE:
+                restartSurface(app, target: target)
+
             default:
                 Ghostty.logger.warning("unknown action action=\(action.tag.rawValue)")
                 return false
@@ -866,6 +869,32 @@ extension Ghostty {
                     object: surfaceView,
                     userInfo: [
                         "direction": direction,
+                        Notification.NewSurfaceConfigKey: SurfaceConfiguration(from: ghostty_surface_inherited_config(surface, GHOSTTY_SURFACE_CONTEXT_SPLIT)),
+                    ]
+                )
+
+            default:
+                assertionFailure()
+            }
+        }
+
+        private static func restartSurface(
+            _ app: ghostty_app_t,
+            target: ghostty_target_s
+        ) {
+            switch target.tag {
+            case GHOSTTY_TARGET_APP:
+                Ghostty.logger.warning("restart surface does nothing with an app target")
+                return
+
+            case GHOSTTY_TARGET_SURFACE:
+                guard let surface = target.target.surface else { return }
+                guard let surfaceView = self.surfaceView(from: surface) else { return }
+
+                NotificationCenter.default.post(
+                    name: Notification.ghosttyRestartSurface,
+                    object: surfaceView,
+                    userInfo: [
                         Notification.NewSurfaceConfigKey: SurfaceConfiguration(from: ghostty_surface_inherited_config(surface, GHOSTTY_SURFACE_CONTEXT_SPLIT)),
                     ]
                 )

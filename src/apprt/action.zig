@@ -347,6 +347,10 @@ pub const Action = union(Key) {
     /// The JSON string contains an array of styled segments to render.
     status_bar_update: StatusBarUpdate,
 
+    /// Restart the shell session in the current surface. This replaces
+    /// the current surface with a fresh one in the same position.
+    restart_surface,
+
     /// Sync with: ghostty_action_tag_e
     pub const Key = enum(c_int) {
         quit,
@@ -415,6 +419,7 @@ pub const Action = union(Key) {
         readonly,
         copy_title_to_clipboard,
         status_bar_update,
+        restart_surface,
 
         test "ghostty.h Action.Key" {
             try lib.checkGhosttyHEnum(Key, "GHOSTTY_ACTION_");

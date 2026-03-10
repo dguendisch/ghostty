@@ -389,6 +389,9 @@ extension Ghostty.Notification {
     /// Close the calling surface.
     static let ghosttyCloseSurface = Notification.Name("com.mitchellh.ghostty.closeSurface")
 
+    /// Restart the shell session in the calling surface, replacing it with a fresh surface.
+    static let ghosttyRestartSurface = Notification.Name("com.mitchellh.ghostty.restartSurface")
+
     /// Focus previous/next split. Has a SplitFocusDirection in the userinfo.
     static let ghosttyFocusSplit = Notification.Name("com.mitchellh.ghostty.focusSplit")
     static let SplitDirectionKey = ghosttyFocusSplit.rawValue

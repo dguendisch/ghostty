@@ -5830,6 +5830,12 @@ pub fn performBindingAction(self: *Surface, action: input.Binding.Action) !bool 
 
         .close_surface => self.close(),
 
+        .restart_surface => return try self.rt_app.performAction(
+            .{ .surface = self },
+            .restart_surface,
+            {},
+        ),
+
         .close_window => return try self.rt_app.performAction(
             .{ .surface = self },
             .close_window,
@@ -6000,6 +6006,7 @@ fn closingAction(action: input.Binding.Action) bool {
         .close_surface,
         .close_window,
         .close_tab,
+        .restart_surface,
         => true,
 
         else => false,
