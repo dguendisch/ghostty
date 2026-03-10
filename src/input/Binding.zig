@@ -681,6 +681,11 @@ pub const Action = union(enum) {
     /// of the `confirm-close-surface` configuration setting.
     close_surface,
 
+    /// Restart the shell session in the current surface. This creates a
+    /// fresh shell in the same tile/split position, preserving the tiling
+    /// layout while giving you a clean terminal.
+    restart_surface,
+
     /// Close the current tab and all splits therein, close all other tabs, or
     /// close every tab to the right of the current one depending on the mode.
     ///
@@ -1352,6 +1357,7 @@ pub const Action = union(enum) {
             .write_screen_file,
             .write_selection_file,
             .close_surface,
+            .restart_surface,
             .close_tab,
             .close_window,
             .toggle_maximize,

@@ -180,6 +180,11 @@ class BaseTerminalController: NSWindowController,
             object: nil)
         center.addObserver(
             self,
+            selector: #selector(ghosttyDidRestartSurface(_:)),
+            name: Ghostty.Notification.ghosttyRestartSurface,
+            object: nil)
+        center.addObserver(
+            self,
             selector: #selector(ghosttyDidNewSplit(_:)),
             name: Ghostty.Notification.ghosttyNewSplit,
             object: nil)
@@ -589,6 +594,35 @@ class BaseTerminalController: NSWindowController,
         closeSurface(
             node,
             withConfirmation: (notification.userInfo?["process_alive"] as? Bool) ?? false)
+    }
+
+    @objc private func ghosttyDidRestartSurface(_ notification: Notification) {
+        guard let oldView = notification.object as? Ghostty.SurfaceView else { return }
+        guard let oldNode = surfaceTree.root?.node(view: oldView) else { return }
+
+        // Get the inherited config for the new surface
+        let configAny = notification.userInfo?[Ghostty.Notification.NewSurfaceConfigKey]
+        let config = configAny as? Ghostty.SurfaceConfiguration
+
+        // Create a new surface view with the inherited config
+        guard let ghostty_app = ghostty.app else { return }
+        let newView = Ghostty.SurfaceView(ghostty_app, baseConfig: config)
+
+        // Replace the old surface node with the new one in the split tree
+        let newTree: SplitTree<Ghostty.SurfaceView>
+        do {
+            newTree = try surfaceTree.replacing(node: oldNode, with: .leaf(view: newView))
+        } catch {
+            Ghostty.logger.warning("failed to restart surface: \(error)")
+            return
+        }
+
+        replaceSurfaceTree(
+            newTree,
+            moveFocusTo: newView,
+            moveFocusFrom: oldView,
+            undoAction: "Restart Shell"
+        )
     }
 
     @objc private func ghosttyDidNewSplit(_ notification: Notification) {

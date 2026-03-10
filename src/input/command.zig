@@ -579,6 +579,12 @@ fn actionCommands(action: Action.Key) []const Command {
             .description = "Close the current terminal.",
         }},
 
+        .restart_surface => comptime &.{.{
+            .action = .restart_surface,
+            .title = "Restart Shell Session",
+            .description = "Restart the shell session in the current terminal, creating a fresh shell in the same position.",
+        }},
+
         .close_tab => comptime &.{
             .{
                 .action = .{ .close_tab = .this },
